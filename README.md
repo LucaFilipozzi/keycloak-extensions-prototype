@@ -14,6 +14,12 @@
 
 prototype of [keycloak][keycloak] extensions
 
+usage:
+
+* build the JAR
+* deploy the JAR into /path/to/keycloak/standalone/deployments/
+* use the authenticators in flows
+
 ---
 Copyright (C) 2021 Luca Filipozzi. Some rights reserved.
 
