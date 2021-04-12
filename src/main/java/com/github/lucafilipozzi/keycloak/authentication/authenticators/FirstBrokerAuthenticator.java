@@ -4,8 +4,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-package com.github.lucafilipozzi.keycloak.authenticator;
+package com.github.lucafilipozzi.keycloak.authentication.authenticators;
 
+import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.models.KeycloakSession;
@@ -13,10 +14,19 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 
 @SuppressWarnings("unused")
-public class PrototypeAuthenticator implements Authenticator {
+public class FirstBrokerAuthenticator implements Authenticator {
+
+  private static final Logger LOG = Logger.getLogger(FirstBrokerAuthenticator.class);
+
   @Override
   public void authenticate(AuthenticationFlowContext authenticationFlowContext) {
-    authenticationFlowContext.attempted();
+    if (authenticationFlowContext.getAuthenticatorConfig() != null &&
+        authenticationFlowContext.getAuthenticatorConfig().getConfig().containsKey(FirstBrokerAuthenticatorFactory.LOG_MESSAGE)) {
+      LOG.infof("%s", authenticationFlowContext.getAuthenticatorConfig().getConfig().get(FirstBrokerAuthenticatorFactory.LOG_MESSAGE));
+    } else {
+      LOG.infof("log message not configured!");
+    }
+    authenticationFlowContext.success();
   }
 
   @Override

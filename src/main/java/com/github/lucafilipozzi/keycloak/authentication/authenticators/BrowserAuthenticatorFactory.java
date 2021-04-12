@@ -4,7 +4,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-package com.github.lucafilipozzi.keycloak.authenticator;
+package com.github.lucafilipozzi.keycloak.authentication.authenticators;
+
+import static org.keycloak.provider.ProviderConfigProperty.STRING_TYPE;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,10 +19,13 @@ import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 
 @SuppressWarnings("unused")
-public class PrototypeAuthenticatorFactory implements AuthenticatorFactory {
+public class BrowserAuthenticatorFactory implements AuthenticatorFactory {
+
+  protected static final String LOG_MESSAGE = "log message";
+
   @Override
   public String getDisplayType() {
-    return "Prototype Authenticator";
+    return "Prototype Browser Authenticator";
   }
 
   @Override
@@ -30,7 +35,7 @@ public class PrototypeAuthenticatorFactory implements AuthenticatorFactory {
 
   @Override
   public boolean isConfigurable() {
-    return false;
+    return true;
   }
 
   @Override
@@ -45,17 +50,19 @@ public class PrototypeAuthenticatorFactory implements AuthenticatorFactory {
 
   @Override
   public String getHelpText() {
-    return "this is the prototype authenticator";
+    return "this is the prototype browser authenticator";
   }
 
   @Override
   public List<ProviderConfigProperty> getConfigProperties() {
-    return Collections.emptyList();
+    ProviderConfigProperty providerConfigProperty = new ProviderConfigProperty(
+        LOG_MESSAGE, "message to log", "message to log", STRING_TYPE, null);
+    return Collections.singletonList(providerConfigProperty);
   }
 
   @Override
   public Authenticator create(KeycloakSession keycloakSession) {
-    return new PrototypeAuthenticator();
+    return new BrowserAuthenticator();
   }
 
   @Override
@@ -75,6 +82,6 @@ public class PrototypeAuthenticatorFactory implements AuthenticatorFactory {
 
   @Override
   public String getId() {
-    return "prototype-authenticator";
+    return "prototype-browser-authenticator";
   }
 }
