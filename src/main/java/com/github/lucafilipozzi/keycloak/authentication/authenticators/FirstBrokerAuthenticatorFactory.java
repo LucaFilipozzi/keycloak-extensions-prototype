@@ -6,10 +6,9 @@
 
 package com.github.lucafilipozzi.keycloak.authentication.authenticators;
 
-import static org.keycloak.provider.ProviderConfigProperty.STRING_TYPE;
-
 import java.util.Collections;
 import java.util.List;
+import org.jboss.logging.Logger;
 import org.keycloak.Config.Scope;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.AuthenticatorFactory;
@@ -18,10 +17,13 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 
-@SuppressWarnings("unused")
 public class FirstBrokerAuthenticatorFactory implements AuthenticatorFactory {
 
+  public static final String PROVIDER_ID = "prototype-first-broker-authenticator";
+
   protected static final String LOG_MESSAGE = "log message";
+
+  private static final Logger LOG = Logger.getLogger(FirstBrokerAuthenticatorFactory.class);
 
   @Override
   public String getDisplayType() {
@@ -56,12 +58,17 @@ public class FirstBrokerAuthenticatorFactory implements AuthenticatorFactory {
   @Override
   public List<ProviderConfigProperty> getConfigProperties() {
     ProviderConfigProperty providerConfigProperty = new ProviderConfigProperty(
-        LOG_MESSAGE, "message to log", "message to log", STRING_TYPE, null);
+        LOG_MESSAGE,
+        "message to log",
+        "message to log",
+        ProviderConfigProperty.STRING_TYPE,
+        null);
     return Collections.singletonList(providerConfigProperty);
   }
 
   @Override
   public Authenticator create(KeycloakSession keycloakSession) {
+    LOG.trace("instantiating a FirstBrokerAuthenticator object");
     return new FirstBrokerAuthenticator();
   }
 
@@ -82,6 +89,6 @@ public class FirstBrokerAuthenticatorFactory implements AuthenticatorFactory {
 
   @Override
   public String getId() {
-    return "prototype-first-broker-authenticator";
+    return PROVIDER_ID;
   }
 }
