@@ -14,11 +14,43 @@
 
 prototype of [keycloak][keycloak] extensions
 
-usage:
+## quick start
 
-* build the JAR
-* deploy the JAR into /path/to/keycloak/standalone/deployments/
-* use the authenticators in flows
+To use this project:
+
+1. build the JAR
+2. deploy the JAR into /path/to/keycloak/standalone/deployments/
+3. use the authenticators and mappers in flows and ampping rules
+
+## classes
+
+### authenticators
+
+The following authenticators are available:
+
+* BrowserAuthenticator
+* FirstBrokerAuthenticator
+* PostBrokerAuthenticator
+
+There's really no difference between them... I just wanted separate classes so that they are easily
+differentiatable in server logs.
+
+### mappers
+
+* PrototypeOIDCProtocolMapper
+* PrototypeSAMLProtocolMapper
+
+One's for OIDC and the other for SAML. :)
+
+## development
+
+1. make new authenticator or mapper classes
+2. register classes as follows:
+   1. authenticators go in `src/main/resources/META-INF/services/org.keycloak.authantication.AuthenticatorFactory`
+   2. mappers go in `src/main/resources/META-INF/services/org.keycloak.protocol.ProtocolMapper`
+3. add dependencies to `src/main/resources/META-INF/jboss-deployment-structure.xml`
+
+Note that it is not necessary to modify keycloak's `standalone.xml`: just deploy the JAR into deployments.
 
 ---
 Copyright (C) 2021 Luca Filipozzi. Some rights reserved.
