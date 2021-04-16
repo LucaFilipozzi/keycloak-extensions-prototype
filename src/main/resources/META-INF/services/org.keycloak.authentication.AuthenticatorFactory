@@ -4,6 +4,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-com.github.lucafilipozzi.keycloak.authentication.authenticators.BrowserAuthenticatorFactory
-com.github.lucafilipozzi.keycloak.authentication.authenticators.FirstBrokerAuthenticatorFactory
-com.github.lucafilipozzi.keycloak.authentication.authenticators.PostBrokerAuthenticatorFactory
+com.github.lucafilipozzi.keycloak.authentication.authenticators.PrototypeBrowserAuthenticatorFactory
+com.github.lucafilipozzi.keycloak.authentication.authenticators.PrototypeFirstBrokerAuthenticatorFactory
+com.github.lucafilipozzi.keycloak.authentication.authenticators.PrototypePostBrokerAuthenticatorFactory

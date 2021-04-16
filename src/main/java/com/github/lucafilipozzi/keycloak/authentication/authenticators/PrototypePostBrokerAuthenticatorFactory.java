@@ -17,13 +17,13 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 
-public class PostBrokerAuthenticatorFactory implements AuthenticatorFactory {
+public class PrototypePostBrokerAuthenticatorFactory implements AuthenticatorFactory {
 
   public static final String PROVIDER_ID = "prototype-post-broker-authenticator";
 
   protected static final String LOG_MESSAGE = "log message";
 
-  private static final Logger LOG = Logger.getLogger(PostBrokerAuthenticatorFactory.class);
+  private static final Logger LOG = Logger.getLogger(PrototypePostBrokerAuthenticatorFactory.class);
 
   @Override
   public String getDisplayType() {
@@ -68,8 +68,8 @@ public class PostBrokerAuthenticatorFactory implements AuthenticatorFactory {
 
   @Override
   public Authenticator create(KeycloakSession keycloakSession) {
-    LOG.trace("instantiating a PostBrokerAuthenticator object");
-    return new PostBrokerAuthenticator();
+    LOG.trace("instantiating a PrototypePostBrokerAuthenticator object");
+    return new PrototypePostBrokerAuthenticator();
   }
 
   @Override

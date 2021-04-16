@@ -13,16 +13,15 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 
-@SuppressWarnings("unused")
-public class PostBrokerAuthenticator implements Authenticator {
+public class PrototypePostBrokerAuthenticator implements Authenticator {
 
-  private static final Logger LOG = Logger.getLogger(PostBrokerAuthenticator.class);
+  private static final Logger LOG = Logger.getLogger(PrototypePostBrokerAuthenticator.class);
 
   @Override
   public void authenticate(AuthenticationFlowContext authenticationFlowContext) {
-    if (authenticationFlowContext.getAuthenticatorConfig() != null &&
-        authenticationFlowContext.getAuthenticatorConfig().getConfig().containsKey(PostBrokerAuthenticatorFactory.LOG_MESSAGE)) {
-      LOG.infof("%s", authenticationFlowContext.getAuthenticatorConfig().getConfig().get(PostBrokerAuthenticatorFactory.LOG_MESSAGE));
+    if (authenticationFlowContext.getAuthenticatorConfig() != null
+        && authenticationFlowContext.getAuthenticatorConfig().getConfig().containsKey(PrototypePostBrokerAuthenticatorFactory.LOG_MESSAGE)) {
+      LOG.infof("%s", authenticationFlowContext.getAuthenticatorConfig().getConfig().get(PrototypePostBrokerAuthenticatorFactory.LOG_MESSAGE));
     } else {
       LOG.infof("log message not configured!");
     }

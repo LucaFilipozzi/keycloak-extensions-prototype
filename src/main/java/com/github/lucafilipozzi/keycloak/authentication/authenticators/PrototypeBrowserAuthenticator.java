@@ -13,16 +13,15 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 
-@SuppressWarnings("unused")
-public class BrowserAuthenticator implements Authenticator {
+public class PrototypeBrowserAuthenticator implements Authenticator {
 
-  private static final Logger LOG = Logger.getLogger(BrowserAuthenticator.class);
+  private static final Logger LOG = Logger.getLogger(PrototypeBrowserAuthenticator.class);
 
   @Override
   public void authenticate(AuthenticationFlowContext authenticationFlowContext) {
-    if (authenticationFlowContext.getAuthenticatorConfig() != null &&
-        authenticationFlowContext.getAuthenticatorConfig().getConfig().containsKey(BrowserAuthenticatorFactory.LOG_MESSAGE)) {
-      LOG.infof("%s", authenticationFlowContext.getAuthenticatorConfig().getConfig().get(BrowserAuthenticatorFactory.LOG_MESSAGE));
+    if (authenticationFlowContext.getAuthenticatorConfig() != null
+        && authenticationFlowContext.getAuthenticatorConfig().getConfig().containsKey(PrototypeBrowserAuthenticatorFactory.LOG_MESSAGE)) {
+      LOG.infof("%s", authenticationFlowContext.getAuthenticatorConfig().getConfig().get(PrototypeBrowserAuthenticatorFactory.LOG_MESSAGE));
     } else {
       LOG.infof("log message not configured!");
     }

@@ -17,17 +17,17 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 
-public class FirstBrokerAuthenticatorFactory implements AuthenticatorFactory {
+public class PrototypeBrowserAuthenticatorFactory implements AuthenticatorFactory {
 
-  public static final String PROVIDER_ID = "prototype-first-broker-authenticator";
+  public static final String PROVIDER_ID = "prototype-browser-authenticator";
 
   protected static final String LOG_MESSAGE = "log message";
 
-  private static final Logger LOG = Logger.getLogger(FirstBrokerAuthenticatorFactory.class);
+  private static final Logger LOG = Logger.getLogger(PrototypeBrowserAuthenticatorFactory.class);
 
   @Override
   public String getDisplayType() {
-    return "Prototype First Broker Authenticator";
+    return "Prototype Browser Authenticator";
   }
 
   @Override
@@ -52,7 +52,7 @@ public class FirstBrokerAuthenticatorFactory implements AuthenticatorFactory {
 
   @Override
   public String getHelpText() {
-    return "this is the prototype first broker authenticator";
+    return "this is the prototype browser authenticator";
   }
 
   @Override
@@ -68,8 +68,8 @@ public class FirstBrokerAuthenticatorFactory implements AuthenticatorFactory {
 
   @Override
   public Authenticator create(KeycloakSession keycloakSession) {
-    LOG.trace("instantiating a FirstBrokerAuthenticator object");
-    return new FirstBrokerAuthenticator();
+    LOG.trace("instantiating a PrototypeBrowserAuthenticator object");
+    return new PrototypeBrowserAuthenticator();
   }
 
   @Override
