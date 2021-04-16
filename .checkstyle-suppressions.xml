@@ -9,4 +9,6 @@
 <suppressions>
   <suppress checks="Javadoc" files=".*\.java"/>
   <suppress checks="LineLength" files=".*\.java"/>
+  <suppress checks="AbbreviationAsWordInName" files="PrototypeOIDCProtocolMapper.java" lines="24"/>
+  <suppress checks="AbbreviationAsWordInName" files="PrototypeSAMLProtocolMapper.java" lines="22"/>
 </suppressions>
