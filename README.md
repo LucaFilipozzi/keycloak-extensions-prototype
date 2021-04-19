@@ -18,8 +18,8 @@ prototype of [keycloak][keycloak] extensions
 
 To use this project:
 
-1. build the JAR
-2. deploy the JAR into `/path/to/keycloak/standalone/deployments/`
+1. build the EAR
+2. deploy the EAR into `/path/to/keycloak/standalone/deployments/`
 3. use the authenticators and mappers in flows and ampping rules
 
 ## classes
@@ -48,12 +48,14 @@ One is for OIDC and the other is for SAML. :)
 
 1. make new authenticator or mapper classes
 2. register classes as follows:
-   1. authenticators go in `src/main/resources/META-INF/services/org.keycloak.authantication.AuthenticatorFactory`
-   2. mappers go in `src/main/resources/META-INF/services/org.keycloak.protocol.ProtocolMapper`
-3. add dependencies to `src/main/resources/META-INF/jboss-deployment-structure.xml`
+   1. authenticators go in `bundle/src/main/application/META-INF/services/org.keycloak.authantication.AuthenticatorFactory`
+   2. mappers go in `bundle/src/main/application/META-INF/services/org.keycloak.protocol.ProtocolMapper`
+3. add dependencies to `bundle/src/main/application/META-INF/jboss-deployment-structure.xml`
 
 Note that it is not necessary to modify keycloak's `standalone.xml` configuration: just deploy the
-JAR into `/path/to/keycloak/standalone/deployments`.
+EAR into `/path/to/keycloak/standalone/deployments`.
+
+Note that an EAR is used so that any necessary 3rd party JARs may be bundled into the EAR.
 
 ---
 Copyright (C) 2021 Luca Filipozzi. Some rights reserved.

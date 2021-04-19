@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2021 Luca Filipozzi. Some rights reserved. -->
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.github.lucafilipozzi</groupId>
+    <artifactId>keycloak-extensions-prototype</artifactId>
+    <version>${revision}</version>
+  </parent>
+
+  <artifactId>keycloak-extensions-prototype-bundle</artifactId>
+  <packaging>ear</packaging>
+  <name>bundle</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>${project.parent.groupId}</groupId>
+      <artifactId>${project.parent.artifactId}-module</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>${project.parent.artifactId}-${revision}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-ear-plugin</artifactId>
+        <configuration>
+          <displayName>${project.parent.artifactId}</displayName>
+          <description>${project.parent.description}</description>
+          <modules>
+            <jarModule>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>${project.parent.artifactId}-module</artifactId>
+              <bundleFileName>${project.parent.groupId}-${project.parent.artifactId}-${revision}.jar</bundleFileName>
+            </jarModule>
+          </modules>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
