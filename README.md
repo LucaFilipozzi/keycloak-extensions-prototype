@@ -2,6 +2,10 @@
 [![latest tag][latest-tag-img]][latest-tag-url]
 [![latest release][latest-release-img]][latest-release-url]
 
+[![build][build-img]][build-url]
+[![analyze][analyze-img]][analyze-url]
+[![dependabot][dependabot-img]][dependabot-url]
+
 [![languages][languages-img]][languages-url]
 [![alerts][alerts-img]][alerts-url]
 [![code quality][code-quality-img]][code-quality-url]
@@ -80,6 +84,13 @@ file, You can obtain one at https://mozilla.org/MPL/2.0/.
 [latest-tag-url]: https://github.com/LucaFilipozzi/keycloak-extensions-prototype/tags
 [license-img]: https://badgen.net/github/license/LucaFilipozzi/keycloak-extensions-prototype?icon=github
 [license-url]: https://github.com/LucaFilipozzi/keycloak-extensions-prototype/blob/main/LICENSE.md
+
+[analyze-img]: https://github.com/LucaFilipozzi/keycloak-extensions-prototype/actions/workflows/analyze.yml/badge.svg
+[analyze-url]: https://github.com/LucaFilipozzi/keycloak-extensions-prototype/actions/workflows/analyze.yml
+[build-img]: https://github.com/LucaFilipozzi/keycloak-extensions-prototype/actions/workflows/build.yml/badge.svg
+[build-url]: https://github.com/LucaFilipozzi/keycloak-extensions-prototype/actions/workflows/build.yml
+[dependabot-img]: https://badgen.net/github/dependabot/LucaFilipozzi/keycloak-extensions-prototype?icon=dependabot
+[dependabot-url]: https://github.com/LucaFilipozzi/keycloak-extensions-prototype/network/dependencies
 
 [languages-img]: https://badgen.net/lgtm/langs/g/LucaFilipozzi/keycloak-extensions-prototype?icon=lgtm
 [languages-url]: https://lgtm.com/projects/g/LucaFilipozzi/keycloak-extensions-prototype/logs/languages/lang:java
