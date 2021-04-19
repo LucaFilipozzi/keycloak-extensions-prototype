@@ -18,4 +18,4 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
     - name: build with maven
-      run: mvn --bach-mode --file pom.xml package
+      run: mvn --batch-mode --file pom.xml package
