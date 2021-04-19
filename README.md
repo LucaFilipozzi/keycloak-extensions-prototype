@@ -24,7 +24,7 @@ To use this project:
 
 1. build the EAR
 2. deploy the EAR into `/path/to/keycloak/standalone/deployments/`
-3. use the authenticators and mappers in flows and ampping rules
+3. use the authenticators and mappers in flows and mapping rules
 
 ## classes
 
