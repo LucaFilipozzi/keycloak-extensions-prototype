@@ -46,11 +46,19 @@ One is for OIDC and the other is for SAML. :)
 
 ## development
 
-1. make new authenticator or mapper classes
-2. register classes as follows:
+### classes
+
+1. create new authenticator or mapper classes
+   1. authenticators go in `module/src/main/java/com/github/lucafilipozzi/keycloak/authentication/authenticators/`
+   2. mappers go in `module/src/main/java/com/github/lucafilipozzi/keycloak/protocol/[oidc,saml]/mappers/`
+2. register the classes as follows:
    1. authenticators go in `bundle/src/main/application/META-INF/services/org.keycloak.authantication.AuthenticatorFactory`
    2. mappers go in `bundle/src/main/application/META-INF/services/org.keycloak.protocol.ProtocolMapper`
-3. add dependencies to `bundle/src/main/application/META-INF/jboss-deployment-structure.xml`
+
+### dependencies
+
+1. define dependencies in `pom.xml` and/or `module/pom.xml`
+2. register the dependencies by adding them to `bundle/src/main/application/META-INF/jboss-deployment-structure.xml`
 
 Note that it is not necessary to modify keycloak's `standalone.xml` configuration: just deploy the
 EAR into `/path/to/keycloak/standalone/deployments`.
