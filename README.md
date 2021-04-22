@@ -64,10 +64,15 @@ One is for OIDC and the other is for SAML. :)
 1. define dependencies in `pom.xml` and/or `module/pom.xml`
 2. register the dependencies by adding them to `bundle/src/main/application/META-INF/jboss-deployment-structure.xml`
 
-Note that it is not necessary to modify keycloak's `standalone.xml` configuration: just deploy the
-EAR into `/path/to/keycloak/standalone/deployments`.
+maven will include the dependencies (assuming they are not scoped as compile or provided) into the EAR.
 
-Note that an EAR is used so that any necessary 3rd party JARs may be bundled into the EAR.
+### deployment
+
+maven will the EAR as `bundle/target/keycloak-extensions-prototype-<version>.ear`
+
+Note that it is not necessary to modify keycloak's `standalone.xml`
+configuration to deploy this EAR: just deploy the EAR into
+`/path/to/keycloak/standalone/deployments`.
 
 ---
 Copyright (C) 2021 Luca Filipozzi. Some rights reserved.
