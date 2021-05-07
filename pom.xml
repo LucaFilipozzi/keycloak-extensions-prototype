@@ -10,7 +10,7 @@
   <parent>
     <artifactId>keycloak-parent</artifactId>
     <groupId>org.keycloak</groupId>
-    <version>12.0.4</version>
+    <version>13.0.0</version>
   </parent>
 
   <groupId>com.github.lucafilipozzi</groupId>
