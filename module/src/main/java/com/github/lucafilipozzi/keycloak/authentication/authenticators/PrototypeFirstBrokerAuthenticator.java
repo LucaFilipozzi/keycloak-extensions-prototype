@@ -25,7 +25,7 @@ public class PrototypeFirstBrokerAuthenticator implements Authenticator {
     } else {
       LOG.infof("log message not configured!");
     }
-    authenticationFlowContext.success();
+    authenticationFlowContext.attempted();
   }
 
   @Override
