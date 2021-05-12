@@ -37,7 +37,9 @@
             <jarModule>
               <groupId>${project.groupId}</groupId>
               <artifactId>${project.parent.artifactId}-module</artifactId>
-              <bundleFileName>${project.parent.groupId}-${project.parent.artifactId}-${revision}.jar</bundleFileName>
+              <bundleDir>/</bundleDir>
+              <bundleFileName>${project.parent.groupId}-${project.parent.artifactId}.jar</bundleFileName>
+              <includeInApplicationXml>true</includeInApplicationXml>
             </jarModule>
           </modules>
         </configuration>

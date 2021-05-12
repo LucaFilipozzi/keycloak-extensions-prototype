@@ -4,7 +4,7 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at https://mozilla.org/MPL/2.0/. -->
 <jboss-deployment-structure>
-  <deployment>
+  <sub-deployment name="com.github.lucafilipozzi-keycloak-extensions-prototype.jar">
     <dependencies>
       <module name="org.jboss.logging"/>
       <module name="org.keycloak.keycloak-common"/>
@@ -14,5 +14,5 @@
       <module name="org.keycloak.keycloak-server-spi-private"/>
       <module name="org.keycloak.keycloak-services"/>
     </dependencies>
-  </deployment>
+  </sub-deployment>
 </jboss-deployment-structure>
