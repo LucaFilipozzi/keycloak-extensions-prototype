@@ -9,6 +9,7 @@ package com.github.lucafilipozzi.keycloak.authentication.authenticators;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.Authenticator;
+import org.keycloak.models.AuthenticationExecutionModel.Requirement;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
@@ -25,7 +26,12 @@ public class PrototypeBrowserAuthenticator implements Authenticator {
     } else {
       LOG.infof("log message not configured!");
     }
-    authenticationFlowContext.attempted();
+    Requirement requirement = authenticationFlowContext.getExecution().getRequirement();
+    if (requirement == Requirement.REQUIRED) {
+      authenticationFlowContext.success();
+    } else {
+      authenticationFlowContext.attempted();
+    }
   }
 
   @Override
