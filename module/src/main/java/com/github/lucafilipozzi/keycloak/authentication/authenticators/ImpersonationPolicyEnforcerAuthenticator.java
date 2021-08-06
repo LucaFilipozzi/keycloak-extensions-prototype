@@ -9,9 +9,10 @@ package com.github.lucafilipozzi.keycloak.authentication.authenticators;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
-import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.KeycloakSession;
@@ -64,7 +65,10 @@ public class ImpersonationPolicyEnforcerAuthenticator implements Authenticator {
           .collect(Collectors.toSet());
       if (roleIntersection.isEmpty()) {
         LOG.infof("deny access to impersonator");
-        context.failure(AuthenticationFlowError.CLIENT_DISABLED);
+        Response response = context.form()
+            .setError("impersonator access denied")
+            .createErrorPage(Status.UNAUTHORIZED);
+        context.forceChallenge(response);
         return;
       }
       LOG.infof("grant access to impersonator");
