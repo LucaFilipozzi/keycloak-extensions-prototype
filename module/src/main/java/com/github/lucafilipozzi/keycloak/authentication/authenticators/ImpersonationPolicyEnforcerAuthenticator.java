@@ -54,7 +54,7 @@ public class ImpersonationPolicyEnforcerAuthenticator implements Authenticator {
           .map(RoleModel::getName)
           .filter(name -> name.endsWith("Impersonator"))
           .collect(Collectors.toSet());
-      UserModel impersonator = keycloakSession.userLocalStorage().getUserById(impersonatorId, realm);
+      UserModel impersonator = keycloakSession.userLocalStorage().getUserById(realm, impersonatorId);
       Set<String> impersonatorRoles = impersonator.getClientRoleMappingsStream(client)
           .map(RoleModel::getName)
           .filter(name -> name.endsWith("Impersonator"))
