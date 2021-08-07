@@ -26,9 +26,9 @@ import org.keycloak.services.managers.AuthenticationManager;
 import org.keycloak.services.managers.AuthenticationManager.AuthResult;
 import org.keycloak.sessions.AuthenticationSessionModel;
 
-public class ImpersonationPolicyEnforcerAuthenticator implements Authenticator {
+public class ImpersonationPolicyEnforcer implements Authenticator {
 
-  private static final Logger LOG = Logger.getLogger(ImpersonationPolicyEnforcerAuthenticator.class);
+  private static final Logger LOG = Logger.getLogger(ImpersonationPolicyEnforcer.class);
 
   @Override
   public void authenticate(AuthenticationFlowContext context) {

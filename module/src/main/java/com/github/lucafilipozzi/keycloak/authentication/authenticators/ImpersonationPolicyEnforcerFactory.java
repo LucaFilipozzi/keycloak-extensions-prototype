@@ -17,11 +17,11 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 
-public class ImpersonationPolicyEnforcerAuthenticatorFactory implements AuthenticatorFactory {
+public class ImpersonationPolicyEnforcerFactory implements AuthenticatorFactory {
 
   public static final String PROVIDER_ID = "impersonation-policy-enforcer";
 
-  private static final Logger LOG = Logger.getLogger(ImpersonationPolicyEnforcerAuthenticatorFactory.class);
+  private static final Logger LOG = Logger.getLogger(ImpersonationPolicyEnforcerFactory.class);
 
   @Override
   public String getDisplayType() {
@@ -35,7 +35,7 @@ public class ImpersonationPolicyEnforcerAuthenticatorFactory implements Authenti
 
   @Override
   public boolean isConfigurable() {
-    return true;
+    return false;
   }
 
   @Override
@@ -50,7 +50,7 @@ public class ImpersonationPolicyEnforcerAuthenticatorFactory implements Authenti
 
   @Override
   public String getHelpText() {
-    return "this is the impersonator policy enforcer authenticator";
+    return "use Impersonation Policy Enforcer in place of Cookie";
   }
 
   @Override
@@ -60,8 +60,8 @@ public class ImpersonationPolicyEnforcerAuthenticatorFactory implements Authenti
 
   @Override
   public Authenticator create(KeycloakSession keycloakSession) {
-    LOG.trace("instantiating an ImpersonationPolicyEnforcerAuthenticator object");
-    return new ImpersonationPolicyEnforcerAuthenticator();
+    LOG.trace("instantiating an ImpersonationPolicyEnforcer object");
+    return new ImpersonationPolicyEnforcer();
   }
 
   @Override
