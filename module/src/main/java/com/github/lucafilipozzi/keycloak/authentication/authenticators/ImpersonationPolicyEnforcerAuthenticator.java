@@ -15,6 +15,7 @@ import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.models.ClientModel;
+import org.keycloak.models.ImpersonationSessionNote;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.RoleModel;
@@ -31,6 +32,7 @@ public class ImpersonationPolicyEnforcerAuthenticator implements Authenticator {
 
   @Override
   public void authenticate(AuthenticationFlowContext context) {
+    // check for a valid cookie
     KeycloakSession keycloakSession = context.getSession();
     RealmModel realm = context.getRealm();
     AuthResult authResult = AuthenticationManager.authenticateIdentityCookie(keycloakSession, realm, true);
@@ -39,43 +41,58 @@ public class ImpersonationPolicyEnforcerAuthenticator implements Authenticator {
       return;
     }
 
+    // check whether re-authentication is required
+    UserModel user = authResult.getUser();
     UserSessionModel userSession = authResult.getSession();
-    AuthenticationSessionModel clientSession = context.getAuthenticationSession();
-    LoginProtocol loginProtocol = keycloakSession.getProvider(LoginProtocol.class, clientSession.getProtocol());
-    if (loginProtocol.requireReauthentication(userSession, clientSession)) {
+    AuthenticationSessionModel authSession = context.getAuthenticationSession();
+    LoginProtocol loginProtocol = keycloakSession.getProvider(LoginProtocol.class, authSession.getProtocol());
+    if (loginProtocol.requireReauthentication(userSession, authSession)) {
       context.attempted();
       return;
     }
 
+    // enforce impersonation policy: impersonator must have assigned client impersonation role
     Map<String,String> userSessionNotes = userSession.getNotes();
-    if (userSessionNotes.containsKey("IMPERSONATOR_ID")) {
-      String impersonatorId = userSessionNotes.get("IMPERSONATOR_ID");
-      ClientModel client = clientSession.getClient();
+    if (userSessionNotes.containsKey(ImpersonationSessionNote.IMPERSONATOR_ID.toString())) {
+      // get the set of available client impersonator roles
+      ClientModel client = authSession.getClient();
       Set<String> clientRoles = client.getRolesStream()
           .map(RoleModel::getName)
           .filter(name -> name.endsWith("Impersonator"))
           .collect(Collectors.toSet());
+
+      // get the set of client impersonator roles assigned to the impersonator
+      String impersonatorId = userSessionNotes.get(ImpersonationSessionNote.IMPERSONATOR_ID.toString());
       UserModel impersonator = keycloakSession.userLocalStorage().getUserById(realm, impersonatorId);
       Set<String> impersonatorRoles = impersonator.getClientRoleMappingsStream(client)
           .map(RoleModel::getName)
           .filter(name -> name.endsWith("Impersonator"))
           .collect(Collectors.toSet());
+
+      // compute the intersection of the two sets
       Set<String> roleIntersection = impersonatorRoles.stream()
           .filter(clientRoles::contains)
           .collect(Collectors.toSet());
+
+      // deny access if the intersection is empty
       if (roleIntersection.isEmpty()) {
-        LOG.infof("deny access to impersonator");
+        LOG.infof("deny access to impersonator user=%s client=%s impersonator=%s",
+            user.getUsername(), client.getClientId(), impersonator.getUsername());
         Response response = context.form()
             .setError("impersonator access denied")
             .createErrorPage(Status.UNAUTHORIZED);
         context.forceChallenge(response);
         return;
       }
-      LOG.infof("grant access to impersonator");
-      clientSession .setUserSessionNote("IMPERSONATOR_ROLES", String.join(",", impersonatorRoles));
+
+      // otherwise grant access
+      String roles = String.join(",", roleIntersection);
+      LOG.infof("grant access to impersonator user=%s client=%s impersonator=%s roles=%s",
+          user.getUsername(), client.getClientId(), impersonator.getUsername(), roles);
+      authSession .setUserSessionNote("IMPERSONATOR_ROLES", roles);
     }
 
-    clientSession.setAuthNote(AuthenticationManager.SSO_AUTH, "true");
+    authSession.setAuthNote(AuthenticationManager.SSO_AUTH, "true");
     context.setUser(authResult.getUser());
     context.attachUserSession(userSession);
     context.success();
