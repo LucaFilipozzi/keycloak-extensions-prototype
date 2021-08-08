@@ -6,7 +6,9 @@
 
 package com.github.lucafilipozzi.keycloak.broker.util;
 
+import com.google.common.collect.Sets;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.jboss.logging.Logger;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
@@ -24,18 +26,23 @@ public final class ImpersonatorPolicyUtil {
     throw new UnsupportedOperationException();
   }
 
-  public static void processUserRoleAssignments(RealmModel realm, UserModel user, Set<String> assertedGroupMemberships, String clientRoleAttributeName) {
-    realm.getClientsStream().forEach(client -> client
-      .getRolesStream()
+  public static void assignClientRolesToUser(RealmModel realm, UserModel user, Set<String> assertedValues, String clientRoleAttributeName) {
+    LOG.trace("assign client roles to user");
+    realm.getClientsStream().forEach(client -> client.getRolesStream()
       .filter(clientRole -> clientRole.getName().endsWith(CLIENT_ROLE_SUFFIX))
       .forEach(clientRole ->
         {
-          if (clientRole.getAttributeStream(clientRoleAttributeName).anyMatch(assertedGroupMemberships::contains)) {
-            LOG.infof("delete mapping client=%s role=%s user=%s", client.getClientId(), clientRole.getName(), user.getUsername());
-            user.deleteRoleMapping(clientRole);
+          Set<String> requiredValues = clientRole.getAttributeStream(clientRoleAttributeName).collect(Collectors.toSet());
+          if (Sets.intersection(assertedValues, requiredValues).isEmpty()) {
+            if (user.hasRole(clientRole)) {
+              LOG.infof("delete mapping client=%s role=%s user=%s", client.getClientId(), clientRole.getName(), user.getUsername());
+              user.deleteRoleMapping(clientRole);
+            }
           } else {
-            LOG.infof("insert mapping client=%s role=%s user=%s", client.getClientId(), clientRole.getName(), user.getUsername());
-            user.grantRole(clientRole);
+            if (!user.hasRole(clientRole)) {
+              LOG.infof("insert mapping client=%s role=%s user=%s", client.getClientId(), clientRole.getName(), user.getUsername());
+              user.grantRole(clientRole);
+            }
           }
         }
       )

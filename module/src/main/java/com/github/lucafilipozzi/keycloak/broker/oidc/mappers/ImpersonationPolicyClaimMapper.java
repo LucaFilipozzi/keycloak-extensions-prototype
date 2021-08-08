@@ -98,27 +98,27 @@ public class ImpersonationPolicyClaimMapper extends AbstractClaimMapper {
 
   @Override
   public void importNewUser(KeycloakSession session, RealmModel realm, UserModel user, IdentityProviderMapperModel mapper, BrokeredIdentityContext context) {
-    LOG.trace("import new user");
-    processUserClientRoleAssignments(realm, user, mapper, context);
+    LOG.trace("import user");
+    processUser(realm, user, mapper, context);
   }
 
   @Override
   public void updateBrokeredUser(KeycloakSession session, RealmModel realm, UserModel user, IdentityProviderMapperModel mapper, BrokeredIdentityContext context) {
-    LOG.trace("update new user");
-    processUserClientRoleAssignments(realm, user, mapper, context);
+    LOG.trace("update user");
+    processUser(realm, user, mapper, context);
   }
 
-  private void processUserClientRoleAssignments(RealmModel realm, UserModel user, IdentityProviderMapperModel mapper, BrokeredIdentityContext context) {
-    LOG.trace("process user role assignments");
+  private void processUser(RealmModel realm, UserModel user, IdentityProviderMapperModel mapper, BrokeredIdentityContext context) {
+    LOG.trace("process user");
     String oidcClaimName = mapper.getConfig().getOrDefault(OIDC_CLAIM_NAME, "");
-    Set<String> assertedGroupMemberships;
+    Set<String> assertedValues;
     Object claimValue = getClaimValue(context, oidcClaimName);
     if (claimValue instanceof List) {
-      assertedGroupMemberships = ((List<?>) claimValue).stream().map(String.class::cast).collect(Collectors.toSet());
+      assertedValues = ((List<?>) claimValue).stream().map(String.class::cast).collect(Collectors.toSet());
     } else {
-      assertedGroupMemberships = Collections.emptySet();
+      assertedValues = Collections.emptySet();
     }
     String clientRoleAttributeName = mapper.getConfig().getOrDefault(CLIENT_ROLE_ATTRIBUTE_NAME, "");
-    ImpersonatorPolicyUtil.processUserRoleAssignments(realm, user, assertedGroupMemberships, clientRoleAttributeName);
+    ImpersonatorPolicyUtil.assignClientRolesToUser(realm, user, assertedValues, clientRoleAttributeName);
   }
 }

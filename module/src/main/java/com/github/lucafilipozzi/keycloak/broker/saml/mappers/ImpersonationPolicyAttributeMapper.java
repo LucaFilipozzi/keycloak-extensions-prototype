@@ -98,27 +98,27 @@ public class ImpersonationPolicyAttributeMapper extends AbstractIdentityProvider
 
   @Override
   public void importNewUser(KeycloakSession session, RealmModel realm, UserModel user, IdentityProviderMapperModel mapper, BrokeredIdentityContext context) {
-    LOG.trace("import new user");
-    processUserClientRoleAssignments(realm, user, mapper, context);
+    LOG.trace("import user");
+    processUser(realm, user, mapper, context);
   }
 
   @Override
   public void updateBrokeredUser(KeycloakSession session, RealmModel realm, UserModel user, IdentityProviderMapperModel mapper, BrokeredIdentityContext context) {
-    LOG.trace("update new user");
-    processUserClientRoleAssignments(realm, user, mapper, context);
+    LOG.trace("update user");
+    processUser(realm, user, mapper, context);
   }
 
-  private void processUserClientRoleAssignments(RealmModel realm, UserModel user, IdentityProviderMapperModel mapper, BrokeredIdentityContext context) {
-    LOG.trace("process user role assignments");
+  private void processUser(RealmModel realm, UserModel user, IdentityProviderMapperModel mapper, BrokeredIdentityContext context) {
+    LOG.trace("process user");
     String samlAttributeName = mapper.getConfig().getOrDefault(SAML_ATTRIBUTE_NAME, "");
     AssertionType assertion = (AssertionType) context.getContextData().get(SAMLEndpoint.SAML_ASSERTION);
-    Set<String> assertedGroupMemberships = assertion.getAttributeStatements().stream()
+    Set<String> assertedValues = assertion.getAttributeStatements().stream()
         .flatMap(statement -> statement.getAttributes().stream())
         .filter(choice -> choice.getAttribute().getFriendlyName().equals(samlAttributeName) || choice.getAttribute().getName().equals(samlAttributeName))
         .flatMap(choice -> choice.getAttribute().getAttributeValue().stream())
         .map(Object::toString)
         .collect(Collectors.toSet());
     String clientRoleAttributeName = mapper.getConfig().getOrDefault(CLIENT_ROLE_ATTRIBUTE_NAME, "");
-    ImpersonatorPolicyUtil.processUserRoleAssignments(realm, user, assertedGroupMemberships, clientRoleAttributeName);
+    ImpersonatorPolicyUtil.assignClientRolesToUser(realm, user, assertedValues, clientRoleAttributeName);
   }
 }
