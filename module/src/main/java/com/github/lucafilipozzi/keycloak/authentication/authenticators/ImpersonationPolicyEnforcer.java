@@ -6,6 +6,7 @@
 
 package com.github.lucafilipozzi.keycloak.authentication.authenticators;
 
+import com.github.lucafilipozzi.keycloak.broker.util.ImpersonatorPolicyUtil;
 import com.google.common.collect.Sets;
 import java.util.Map;
 import java.util.Set;
@@ -27,11 +28,12 @@ import org.keycloak.services.managers.AuthenticationManager;
 import org.keycloak.services.managers.AuthenticationManager.AuthResult;
 import org.keycloak.sessions.AuthenticationSessionModel;
 
+/**
+ * Impersonation policy enforcement point.
+ */
 public class ImpersonationPolicyEnforcer implements Authenticator {
 
   private static final Logger LOG = Logger.getLogger(ImpersonationPolicyEnforcer.class);
-
-  private static final String CLIENT_ROLE_SUFFIX = "Impersonator";
 
   @Override
   public void authenticate(AuthenticationFlowContext context) {
@@ -61,7 +63,7 @@ public class ImpersonationPolicyEnforcer implements Authenticator {
       ClientModel client = authSession.getClient();
       Set<String> clientRoles = client.getRolesStream()
           .map(RoleModel::getName)
-          .filter(name -> name.endsWith(CLIENT_ROLE_SUFFIX))
+          .filter(name -> name.endsWith(ImpersonatorPolicyUtil.CLIENT_ROLE_SUFFIX))
           .collect(Collectors.toSet());
 
       // get the set of client roles assigned to the impersonator (filtered)
@@ -69,7 +71,7 @@ public class ImpersonationPolicyEnforcer implements Authenticator {
       UserModel impersonator = keycloakSession.userLocalStorage().getUserById(realm, impersonatorId);
       Set<String> impersonatorRoles = impersonator.getClientRoleMappingsStream(client)
           .map(RoleModel::getName)
-          .filter(name -> name.endsWith(CLIENT_ROLE_SUFFIX))
+          .filter(name -> name.endsWith(ImpersonatorPolicyUtil.CLIENT_ROLE_SUFFIX))
           .collect(Collectors.toSet());
 
       // compute the intersection of the two sets
