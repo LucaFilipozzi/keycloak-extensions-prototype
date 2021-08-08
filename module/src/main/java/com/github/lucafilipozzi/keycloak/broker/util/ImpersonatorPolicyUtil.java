@@ -28,16 +28,37 @@ public final class ImpersonatorPolicyUtil {
     throw new UnsupportedOperationException();
   }
 
-  public static void upsertRole(RealmModel realm, UserModel user, Set<String> assertedGroupMemberships) {
-    realm.getClientsStream().forEach(client ->
-        client.getRolesStream()
-          .filter(clientRole -> clientRole.getName().endsWith(CLIENT_ROLE_SUFFIX))
-          .forEach(clientRole -> upsertRole(client, clientRole, user, assertedGroupMemberships))
+  public static void processUserRoleAssignments(RealmModel realm, UserModel user, Set<String> assertedGroupMemberships, String clientRoleAttributeName) {
+    realm.getClientsStream().forEach(client -> client
+      .getRolesStream()
+      .filter(clientRole -> clientRole.getName().endsWith(CLIENT_ROLE_SUFFIX))
+      .forEach(clientRole ->
+        {
+          if (clientRole.getAttributeStream(clientRoleAttributeName).anyMatch(assertedGroupMemberships::contains)) {
+            LOG.infof("delete mapping client=%s role=%s user=%s", client.getClientId(), clientRole.getName(), user.getUsername());
+            user.deleteRoleMapping(clientRole);
+          } else {
+            LOG.infof("insert mapping client=%s role=%s user=%s", client.getClientId(), clientRole.getName(), user.getUsername());
+            user.grantRole(clientRole);
+          }
+        }
+      )
     );
   }
 
-  private static void upsertRole(ClientModel client, RoleModel clientRole, UserModel user, Set<String> assertedGroupMemberships) {
-    Set<String> requiredGroupMemberships = clientRole.getAttributeStream("groupMembership").collect(Collectors.toSet());
+  public static void processUserRoleAssignmentsOld(RealmModel realm, UserModel user, Set<String> assertedGroupMemberships, String clientRoleAttributeName) {
+    realm.getClientsStream().forEach(client ->
+        client.getRolesStream()
+          .filter(clientRole -> clientRole.getName().endsWith(CLIENT_ROLE_SUFFIX))
+          .forEach(clientRole -> processUserRoleAssignments(client, clientRole, user, assertedGroupMemberships, clientRoleAttributeName))
+    );
+  }
+
+  private static void processUserRoleAssignments(ClientModel client, RoleModel clientRole, UserModel user, Set<String> assertedGroupMemberships, String clientRoleAttributeName) {
+    LOG.info("process user role assignments (private)");
+    LOG.info(clientRoleAttributeName);
+    Set<String> requiredGroupMemberships = clientRole.getAttributeStream(clientRoleAttributeName).collect(Collectors.toSet());
+    LOG.info(requiredGroupMemberships);
     if (Sets.intersection(assertedGroupMemberships, requiredGroupMemberships).isEmpty()) {
       LOG.infof("delete mapping client=%s role=%s user=%s", client.getClientId(), clientRole.getName(), user.getUsername());
       user.deleteRoleMapping(clientRole);

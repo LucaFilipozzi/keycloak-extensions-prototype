@@ -7,8 +7,8 @@
 package com.github.lucafilipozzi.keycloak.broker.saml.mappers;
 
 import com.github.lucafilipozzi.keycloak.broker.util.ImpersonatorPolicyUtil;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,7 +19,6 @@ import org.keycloak.broker.provider.BrokeredIdentityContext;
 import org.keycloak.broker.saml.SAMLEndpoint;
 import org.keycloak.broker.saml.SAMLIdentityProviderFactory;
 import org.keycloak.dom.saml.v2.assertion.AssertionType;
-import org.keycloak.dom.saml.v2.assertion.AttributeStatementType;
 import org.keycloak.models.IdentityProviderMapperModel;
 import org.keycloak.models.IdentityProviderSyncMode;
 import org.keycloak.models.KeycloakSession;
@@ -34,11 +33,33 @@ public class ImpersonationPolicyAttributeMapper extends AbstractIdentityProvider
 
   public static final String PROVIDER_ID = "saml-impersonation-policy-attribute-mapper";
 
+  public static final String SAML_ATTRIBUTE_NAME = "saml-attribute-name";
+
+  public static final String CLIENT_ROLE_ATTRIBUTE_NAME = "client-role-attribute-name";
+
   protected static final String[] COMPATIBLE_PROVIDERS = {SAMLIdentityProviderFactory.PROVIDER_ID};
 
   private static final Set<IdentityProviderSyncMode> IDENTITY_PROVIDER_SYNC_MODES = new HashSet<>(Arrays.asList(IdentityProviderSyncMode.values()));
 
   private static final Logger LOG = Logger.getLogger(ImpersonationPolicyAttributeMapper.class);
+
+  private static final List<ProviderConfigProperty> configProperties = new ArrayList<>();
+
+  static {
+    ProviderConfigProperty samlAttributeNameConfigProperty = new ProviderConfigProperty();
+    samlAttributeNameConfigProperty.setName(SAML_ATTRIBUTE_NAME);
+    samlAttributeNameConfigProperty.setLabel("SAML attribute name");
+    samlAttributeNameConfigProperty.setHelpText("name of SAML attribute to search (friendly or otherwise)");
+    samlAttributeNameConfigProperty.setType(ProviderConfigProperty.STRING_TYPE);
+    configProperties.add(samlAttributeNameConfigProperty);
+
+    ProviderConfigProperty clientRoleAttributeNameConfigProperty = new ProviderConfigProperty();
+    clientRoleAttributeNameConfigProperty.setName(CLIENT_ROLE_ATTRIBUTE_NAME);
+    clientRoleAttributeNameConfigProperty.setLabel("client role attribute name");
+    clientRoleAttributeNameConfigProperty.setHelpText("name of client role attribute to search");
+    clientRoleAttributeNameConfigProperty.setType(ProviderConfigProperty.STRING_TYPE);
+    configProperties.add(clientRoleAttributeNameConfigProperty);
+  }
 
   @Override
   public String[] getCompatibleProviders() {
@@ -47,7 +68,7 @@ public class ImpersonationPolicyAttributeMapper extends AbstractIdentityProvider
 
   @Override
   public List<ProviderConfigProperty> getConfigProperties() {
-    return Collections.emptyList();
+    return configProperties;
   }
 
   @Override
@@ -76,27 +97,28 @@ public class ImpersonationPolicyAttributeMapper extends AbstractIdentityProvider
   }
 
   @Override
-  public void importNewUser(KeycloakSession session, RealmModel realm, UserModel user, IdentityProviderMapperModel mapperModel, BrokeredIdentityContext context) {
-    LOG.trace("importing new user");
-    upsertRoles(realm, user, context);
+  public void importNewUser(KeycloakSession session, RealmModel realm, UserModel user, IdentityProviderMapperModel mapper, BrokeredIdentityContext context) {
+    LOG.trace("import new user");
+    processUserClientRoleAssignments(realm, user, mapper, context);
   }
 
   @Override
-  public void updateBrokeredUser(KeycloakSession session, RealmModel realm, UserModel user, IdentityProviderMapperModel mapperModel, BrokeredIdentityContext context) {
-    LOG.trace("updating new user");
-    upsertRoles(realm, user, context);
+  public void updateBrokeredUser(KeycloakSession session, RealmModel realm, UserModel user, IdentityProviderMapperModel mapper, BrokeredIdentityContext context) {
+    LOG.trace("update new user");
+    processUserClientRoleAssignments(realm, user, mapper, context);
   }
 
-  private void upsertRoles(RealmModel realm, UserModel user, BrokeredIdentityContext context) {
-    LOG.trace("upserting roles");
+  private void processUserClientRoleAssignments(RealmModel realm, UserModel user, IdentityProviderMapperModel mapper, BrokeredIdentityContext context) {
+    LOG.trace("process user role assignments");
+    String samlAttributeName = mapper.getConfig().getOrDefault(SAML_ATTRIBUTE_NAME, "");
     AssertionType assertion = (AssertionType) context.getContextData().get(SAMLEndpoint.SAML_ASSERTION);
-    Set<AttributeStatementType> attributeStatements = assertion.getAttributeStatements();
-    Set<String> assertedGroupMemberships = attributeStatements.stream()
+    Set<String> assertedGroupMemberships = assertion.getAttributeStatements().stream()
         .flatMap(statement -> statement.getAttributes().stream())
-        .filter(choice -> choice.getAttribute().getFriendlyName().equals("groupMembership"))
+        .filter(choice -> choice.getAttribute().getFriendlyName().equals(samlAttributeName) || choice.getAttribute().getName().equals(samlAttributeName))
         .flatMap(choice -> choice.getAttribute().getAttributeValue().stream())
         .map(Object::toString)
         .collect(Collectors.toSet());
-    ImpersonatorPolicyUtil.upsertRole(realm, user, assertedGroupMemberships);
+    String clientRoleAttributeName = mapper.getConfig().getOrDefault(CLIENT_ROLE_ATTRIBUTE_NAME, "");
+    ImpersonatorPolicyUtil.processUserRoleAssignments(realm, user, assertedGroupMemberships, clientRoleAttributeName);
   }
 }

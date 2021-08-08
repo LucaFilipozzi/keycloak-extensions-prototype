@@ -7,6 +7,7 @@
 package com.github.lucafilipozzi.keycloak.broker.oidc.mappers;
 
 import com.github.lucafilipozzi.keycloak.broker.util.ImpersonatorPolicyUtil;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,11 +33,33 @@ public class ImpersonationPolicyClaimMapper extends AbstractClaimMapper {
 
   public static final String PROVIDER_ID = "oidc-impersonation-policy-claim-mapper";
 
+  public static final String OIDC_CLAIM_NAME = "oidc-claim-name";
+
+  public static final String CLIENT_ROLE_ATTRIBUTE_NAME = "client-role-attribute-name";
+
   protected static final String[] COMPATIBLE_PROVIDERS = { KeycloakOIDCIdentityProviderFactory.PROVIDER_ID, OIDCIdentityProviderFactory.PROVIDER_ID };
 
   private static final Set<IdentityProviderSyncMode> IDENTITY_PROVIDER_SYNC_MODES = new HashSet<>(Arrays.asList(IdentityProviderSyncMode.values()));
 
   private static final Logger LOG = Logger.getLogger(ImpersonationPolicyClaimMapper.class);
+
+  private static final List<ProviderConfigProperty> configProperties = new ArrayList<>();
+
+  static {
+    ProviderConfigProperty oidcClaimNameConfigProperty = new ProviderConfigProperty();
+    oidcClaimNameConfigProperty.setName(OIDC_CLAIM_NAME);
+    oidcClaimNameConfigProperty.setLabel("OIDC claim name");
+    oidcClaimNameConfigProperty.setHelpText("name of OIDC claim to search");
+    oidcClaimNameConfigProperty.setType(ProviderConfigProperty.STRING_TYPE);
+    configProperties.add(oidcClaimNameConfigProperty);
+
+    ProviderConfigProperty clientRoleAttributeNameConfigProperty = new ProviderConfigProperty();
+    clientRoleAttributeNameConfigProperty.setName(CLIENT_ROLE_ATTRIBUTE_NAME);
+    clientRoleAttributeNameConfigProperty.setLabel("client role attribute name");
+    clientRoleAttributeNameConfigProperty.setHelpText("name of client role attribute to search");
+    clientRoleAttributeNameConfigProperty.setType(ProviderConfigProperty.STRING_TYPE);
+    configProperties.add(clientRoleAttributeNameConfigProperty);
+  }
 
   @Override
   public String[] getCompatibleProviders() {
@@ -45,7 +68,7 @@ public class ImpersonationPolicyClaimMapper extends AbstractClaimMapper {
 
   @Override
   public List<ProviderConfigProperty> getConfigProperties() {
-    return Collections.emptyList();
+    return configProperties;
   }
 
   @Override
@@ -74,26 +97,28 @@ public class ImpersonationPolicyClaimMapper extends AbstractClaimMapper {
   }
 
   @Override
-  public void importNewUser(KeycloakSession session, RealmModel realm, UserModel user, IdentityProviderMapperModel mapperModel, BrokeredIdentityContext context) {
-    LOG.trace("importing new user");
-    upsertRoles(realm, user, context);
+  public void importNewUser(KeycloakSession session, RealmModel realm, UserModel user, IdentityProviderMapperModel mapper, BrokeredIdentityContext context) {
+    LOG.trace("import new user");
+    processUserClientRoleAssignments(realm, user, mapper, context);
   }
 
   @Override
-  public void updateBrokeredUser(KeycloakSession session, RealmModel realm, UserModel user, IdentityProviderMapperModel mapperModel, BrokeredIdentityContext context) {
-    LOG.trace("updating new user");
-    upsertRoles(realm, user, context);
+  public void updateBrokeredUser(KeycloakSession session, RealmModel realm, UserModel user, IdentityProviderMapperModel mapper, BrokeredIdentityContext context) {
+    LOG.trace("update new user");
+    processUserClientRoleAssignments(realm, user, mapper, context);
   }
 
-  private void upsertRoles(RealmModel realm, UserModel user, BrokeredIdentityContext context) {
-    LOG.trace("upserting roles");
+  private void processUserClientRoleAssignments(RealmModel realm, UserModel user, IdentityProviderMapperModel mapper, BrokeredIdentityContext context) {
+    LOG.trace("process user role assignments");
+    String oidcClaimName = mapper.getConfig().getOrDefault(OIDC_CLAIM_NAME, "");
     Set<String> assertedGroupMemberships;
-    Object claimValue = getClaimValue(context, "groupMembership");
+    Object claimValue = getClaimValue(context, oidcClaimName);
     if (claimValue instanceof List) {
       assertedGroupMemberships = ((List<?>) claimValue).stream().map(String.class::cast).collect(Collectors.toSet());
     } else {
       assertedGroupMemberships = Collections.emptySet();
     }
-    ImpersonatorPolicyUtil.upsertRole(realm, user, assertedGroupMemberships);
+    String clientRoleAttributeName = mapper.getConfig().getOrDefault(CLIENT_ROLE_ATTRIBUTE_NAME, "");
+    ImpersonatorPolicyUtil.processUserRoleAssignments(realm, user, assertedGroupMemberships, clientRoleAttributeName);
   }
 }
