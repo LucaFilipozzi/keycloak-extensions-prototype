@@ -31,6 +31,12 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>30.1-jre</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
         <groupId>com.github.lucafilipozzi</groupId>
         <artifactId>keycloak-extensions-prototype-module</artifactId>
         <version>${revision}</version>

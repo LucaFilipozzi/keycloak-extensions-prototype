@@ -6,6 +6,7 @@
 <jboss-deployment-structure>
   <sub-deployment name="com.github.lucafilipozzi-keycloak-extensions-prototype.jar">
     <dependencies>
+      <module name="com.google.guava"/>
       <module name="org.jboss.logging"/>
       <module name="org.keycloak.keycloak-common"/>
       <module name="org.keycloak.keycloak-core"/>
