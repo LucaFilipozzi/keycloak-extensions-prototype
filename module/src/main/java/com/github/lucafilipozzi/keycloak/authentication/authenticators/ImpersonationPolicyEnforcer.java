@@ -55,7 +55,7 @@ public class ImpersonationPolicyEnforcer implements Authenticator {
     }
 
     // enforce impersonation policy: impersonator must have one or more client role(s) assigned
-    Map<String,String> userSessionNotes = userSession.getNotes();
+    Map<String, String> userSessionNotes = userSession.getNotes();
     if (userSessionNotes.containsKey(ImpersonationSessionNote.IMPERSONATOR_ID.toString())) {
       // get the set of available client roles (filtered)
       ClientModel client = authSession.getClient();
@@ -90,7 +90,7 @@ public class ImpersonationPolicyEnforcer implements Authenticator {
       String roles = String.join(",", roleIntersection);
       LOG.infof("grant access to impersonator user=%s client=%s impersonator=%s roles=%s",
           user.getUsername(), client.getClientId(), impersonator.getUsername(), roles);
-      authSession .setUserSessionNote("IMPERSONATOR_ROLES", roles);
+      authSession.setUserSessionNote("IMPERSONATOR_ROLES", roles);
     }
 
     authSession.setAuthNote(AuthenticationManager.SSO_AUTH, "true");
