@@ -35,7 +35,7 @@ public class ImpersonationPolicyAttributeMapper extends AbstractIdentityProvider
 
   public static final String SAML_ATTRIBUTE_NAME = "saml-attribute-name";
 
-  public static final String CLIENT_ROLE_ATTRIBUTE_NAME = "client-role-attribute-name";
+  public static final String REGULAR_EXPRESSION = "regular-expression";
 
   protected static final String[] COMPATIBLE_PROVIDERS = {SAMLIdentityProviderFactory.PROVIDER_ID};
 
@@ -53,12 +53,12 @@ public class ImpersonationPolicyAttributeMapper extends AbstractIdentityProvider
     samlAttributeNameConfigProperty.setType(ProviderConfigProperty.STRING_TYPE);
     configProperties.add(samlAttributeNameConfigProperty);
 
-    ProviderConfigProperty clientRoleAttributeNameConfigProperty = new ProviderConfigProperty();
-    clientRoleAttributeNameConfigProperty.setName(CLIENT_ROLE_ATTRIBUTE_NAME);
-    clientRoleAttributeNameConfigProperty.setLabel("client role attribute name");
-    clientRoleAttributeNameConfigProperty.setHelpText("name of client role attribute to search");
-    clientRoleAttributeNameConfigProperty.setType(ProviderConfigProperty.STRING_TYPE);
-    configProperties.add(clientRoleAttributeNameConfigProperty);
+    ProviderConfigProperty regularExpressionConfigProperty = new ProviderConfigProperty();
+    regularExpressionConfigProperty.setName(REGULAR_EXPRESSION);
+    regularExpressionConfigProperty.setLabel("regular expression");
+    regularExpressionConfigProperty.setHelpText("regular expression to apply to SAML attribute; must match on client and role names");
+    regularExpressionConfigProperty.setType(ProviderConfigProperty.STRING_TYPE);
+    configProperties.add(regularExpressionConfigProperty);
   }
 
   @Override
@@ -118,7 +118,7 @@ public class ImpersonationPolicyAttributeMapper extends AbstractIdentityProvider
         .flatMap(choice -> choice.getAttribute().getAttributeValue().stream())
         .map(Object::toString)
         .collect(Collectors.toSet());
-    String clientRoleAttributeName = mapper.getConfig().getOrDefault(CLIENT_ROLE_ATTRIBUTE_NAME, "");
-    ImpersonatorPolicyUtil.assignClientRolesToUser(realm, user, assertedValues, clientRoleAttributeName);
+    String regularExpression = mapper.getConfig().getOrDefault(REGULAR_EXPRESSION, "");
+    ImpersonatorPolicyUtil.adjustUserClientRoleAssignments(realm, user, assertedValues, regularExpression);
   }
 }

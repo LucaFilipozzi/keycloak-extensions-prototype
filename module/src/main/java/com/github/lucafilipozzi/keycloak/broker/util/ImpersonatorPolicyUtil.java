@@ -30,8 +30,8 @@ public final class ImpersonatorPolicyUtil {
     throw new UnsupportedOperationException();
   }
 
-  public static void foo(RealmModel realm, UserModel user, Set<String> assertedValues, String regularExpression) {
-    LOG.trace("foo");
+  public static void adjustUserClientRoleAssignments(RealmModel realm, UserModel user, Set<String> assertedValues, String regularExpression) {
+    LOG.trace("adjust user client role assignments");
     Pattern pattern = Pattern.compile(regularExpression);
     Set<RoleModel> wantRoles = assertedValues.stream()
         .map(pattern::matcher)
@@ -49,28 +49,5 @@ public final class ImpersonatorPolicyUtil {
         .collect(Collectors.toSet());
     Sets.difference(wantRoles, haveRoles).forEach(user::grantRole);
     Sets.difference(haveRoles, wantRoles).forEach(user::deleteRoleMapping);
-  }
-
-  public static void assignClientRolesToUser(RealmModel realm, UserModel user, Set<String> assertedValues, String clientRoleAttributeName) {
-    LOG.trace("assign client roles to user");
-    realm.getClientsStream().forEach(client -> client.getRolesStream()
-      .filter(clientRole -> clientRole.getName().endsWith(CLIENT_ROLE_SUFFIX))
-      .forEach(clientRole ->
-        {
-          Set<String> requiredValues = clientRole.getAttributeStream(clientRoleAttributeName).collect(Collectors.toSet());
-          if (Sets.intersection(assertedValues, requiredValues).isEmpty()) {
-            if (user.hasRole(clientRole)) {
-              LOG.infof("delete mapping client=%s role=%s user=%s", client.getClientId(), clientRole.getName(), user.getUsername());
-              user.deleteRoleMapping(clientRole);
-            }
-          } else {
-            if (!user.hasRole(clientRole)) {
-              LOG.infof("insert mapping client=%s role=%s user=%s", client.getClientId(), clientRole.getName(), user.getUsername());
-              user.grantRole(clientRole);
-            }
-          }
-        }
-      )
-    );
   }
 }

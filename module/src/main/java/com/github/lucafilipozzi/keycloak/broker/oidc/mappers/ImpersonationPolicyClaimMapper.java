@@ -56,7 +56,7 @@ public class ImpersonationPolicyClaimMapper extends AbstractClaimMapper {
     ProviderConfigProperty regularExpressionConfigProperty = new ProviderConfigProperty();
     regularExpressionConfigProperty.setName(REGULAR_EXPRESSION);
     regularExpressionConfigProperty.setLabel("regular expression");
-    regularExpressionConfigProperty.setHelpText("regular expression to apply to OIDC claim");
+    regularExpressionConfigProperty.setHelpText("regular expression to apply to OIDC claim; must match on client and role names");
     regularExpressionConfigProperty.setType(ProviderConfigProperty.STRING_TYPE);
     configProperties.add(regularExpressionConfigProperty);
   }
@@ -78,7 +78,7 @@ public class ImpersonationPolicyClaimMapper extends AbstractClaimMapper {
 
   @Override
   public String getDisplayType() {
-    return "Impersonation Policy Claim Regex Mapper";
+    return "Impersonation Policy Claim Mapper";
   }
 
   @Override
@@ -108,7 +108,6 @@ public class ImpersonationPolicyClaimMapper extends AbstractClaimMapper {
     processUser(realm, user, mapper, context);
   }
 
-  @SuppressWarnings("DuplicatedCode")
   private void processUser(RealmModel realm, UserModel user, IdentityProviderMapperModel mapper, BrokeredIdentityContext context) {
     LOG.trace("process user");
     String oidcClaimName = mapper.getConfig().getOrDefault(OIDC_CLAIM_NAME, "");
@@ -120,6 +119,6 @@ public class ImpersonationPolicyClaimMapper extends AbstractClaimMapper {
       assertedValues = Collections.emptySet();
     }
     String regularExpression = mapper.getConfig().getOrDefault(REGULAR_EXPRESSION, "");
-    ImpersonatorPolicyUtil.foo(realm, user, assertedValues, regularExpression);
+    ImpersonatorPolicyUtil.adjustUserClientRoleAssignments(realm, user, assertedValues, regularExpression);
   }
 }
