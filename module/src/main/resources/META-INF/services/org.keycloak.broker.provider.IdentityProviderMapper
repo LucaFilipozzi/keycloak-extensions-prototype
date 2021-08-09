@@ -5,4 +5,5 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 com.github.lucafilipozzi.keycloak.broker.oidc.mappers.ImpersonationPolicyClaimMapper
+com.github.lucafilipozzi.keycloak.broker.oidc.mappers.ImpersonationPolicyClaimRegexMapper
 com.github.lucafilipozzi.keycloak.broker.saml.mappers.ImpersonationPolicyAttributeMapper
