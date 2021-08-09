@@ -29,9 +29,9 @@ import org.keycloak.provider.ProviderConfigProperty;
 /**
  * Impersonation policy decision point.
  */
-public class ImpersonationPolicyClaimRegexMapper extends AbstractClaimMapper {
+public class ImpersonationPolicyClaimMapper extends AbstractClaimMapper {
 
-  public static final String PROVIDER_ID = "oidc-impersonation-policy-claim-regex-mapper";
+  public static final String PROVIDER_ID = "oidc-impersonation-policy-claim-mapper";
 
   public static final String OIDC_CLAIM_NAME = "oidc-claim-name";
 
@@ -41,7 +41,7 @@ public class ImpersonationPolicyClaimRegexMapper extends AbstractClaimMapper {
 
   private static final Set<IdentityProviderSyncMode> IDENTITY_PROVIDER_SYNC_MODES = new HashSet<>(Arrays.asList(IdentityProviderSyncMode.values()));
 
-  private static final Logger LOG = Logger.getLogger(ImpersonationPolicyClaimRegexMapper.class);
+  private static final Logger LOG = Logger.getLogger(ImpersonationPolicyClaimMapper.class);
 
   private static final List<ProviderConfigProperty> configProperties = new ArrayList<>();
 
