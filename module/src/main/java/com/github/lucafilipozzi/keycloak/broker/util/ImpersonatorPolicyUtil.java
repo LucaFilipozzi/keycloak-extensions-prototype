@@ -47,14 +47,8 @@ public final class ImpersonatorPolicyUtil {
         .filter(RoleModel::isClientRole)
         .filter(clientRole -> clientRole.getName().endsWith(CLIENT_ROLE_SUFFIX))
         .collect(Collectors.toSet());
-    Sets.difference(wantRoles, haveRoles).forEach(role -> {
-      LOG.infof("insert mapping role=%s user=%s", role.getName(), user.getUsername());
-      user.grantRole(role);
-    });
-    Sets.difference(haveRoles, wantRoles).forEach(role -> {
-      LOG.infof("delete mapping role=%s user=%s", role.getName(), user.getUsername());
-      user.deleteRoleMapping(role);
-    });
+    Sets.difference(wantRoles, haveRoles).forEach(user::grantRole);
+    Sets.difference(haveRoles, wantRoles).forEach(user::deleteRoleMapping);
   }
 
   public static void assignClientRolesToUser(RealmModel realm, UserModel user, Set<String> assertedValues, String clientRoleAttributeName) {
