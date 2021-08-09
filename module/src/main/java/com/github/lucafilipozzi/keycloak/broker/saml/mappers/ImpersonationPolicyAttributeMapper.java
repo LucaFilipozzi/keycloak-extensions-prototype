@@ -56,7 +56,7 @@ public class ImpersonationPolicyAttributeMapper extends AbstractIdentityProvider
     ProviderConfigProperty regularExpressionConfigProperty = new ProviderConfigProperty();
     regularExpressionConfigProperty.setName(REGULAR_EXPRESSION);
     regularExpressionConfigProperty.setLabel("regular expression");
-    regularExpressionConfigProperty.setHelpText("regular expression to apply to SAML attribute; must match on client and role names");
+    regularExpressionConfigProperty.setHelpText("regular expression to apply to SAML attribute; must specify two named-capturing groups: client and role");
     regularExpressionConfigProperty.setType(ProviderConfigProperty.STRING_TYPE);
     configProperties.add(regularExpressionConfigProperty);
   }

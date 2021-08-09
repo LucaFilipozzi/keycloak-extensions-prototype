@@ -56,7 +56,7 @@ public class ImpersonationPolicyClaimMapper extends AbstractClaimMapper {
     ProviderConfigProperty regularExpressionConfigProperty = new ProviderConfigProperty();
     regularExpressionConfigProperty.setName(REGULAR_EXPRESSION);
     regularExpressionConfigProperty.setLabel("regular expression");
-    regularExpressionConfigProperty.setHelpText("regular expression to apply to OIDC claim; must match on client and role names");
+    regularExpressionConfigProperty.setHelpText("regular expression to apply to OIDC claim; must specify two named-capturing groups: client and role");
     regularExpressionConfigProperty.setType(ProviderConfigProperty.STRING_TYPE);
     configProperties.add(regularExpressionConfigProperty);
   }

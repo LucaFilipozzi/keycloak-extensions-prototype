@@ -38,10 +38,10 @@ public final class ImpersonatorPolicyUtil {
         .filter(Matcher::matches)
         .flatMap(matcher ->
             realm.getClientsStream()
-                .filter(client -> client.getClientId().equalsIgnoreCase(matcher.group(1)))
+                .filter(client -> client.getClientId().equalsIgnoreCase(matcher.group("client")))
                 .flatMap(ClientModel::getRolesStream)
                 .filter(clientRole -> clientRole.getName().endsWith(CLIENT_ROLE_SUFFIX))
-                .filter(clientRole -> clientRole.getName().equalsIgnoreCase(matcher.group(2))) )
+                .filter(clientRole -> clientRole.getName().equalsIgnoreCase(matcher.group("role"))) )
         .collect(Collectors.toSet());
     Set<RoleModel> haveRoles = user.getRoleMappingsStream()
         .filter(RoleModel::isClientRole)
