@@ -6,7 +6,7 @@
 
 package com.github.lucafilipozzi.keycloak.broker.oidc.mappers;
 
-import com.github.lucafilipozzi.keycloak.broker.util.ImpersonatorPolicyUtil;
+import com.github.lucafilipozzi.keycloak.broker.util.RegexRealmAndClientRoleMapperUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,21 +27,19 @@ import org.keycloak.models.UserModel;
 import org.keycloak.provider.ProviderConfigProperty;
 
 /**
- * Impersonation policy decision point.
+ * Map a claim to realm and client roles via regex.
  */
-public class ImpersonationPolicyClaimMapper extends AbstractClaimMapper {
+public class RegexRealmAndClientRoleClaimMapper extends AbstractClaimMapper {
 
-  public static final String PROVIDER_ID = "oidc-impersonation-policy-claim-mapper";
+  public static final String PROVIDER_ID = "oidc-regex-claim-mapper";
 
   public static final String OIDC_CLAIM_NAME = "oidc-claim-name";
-
-  public static final String REGULAR_EXPRESSION = "regular-expression";
 
   protected static final String[] COMPATIBLE_PROVIDERS = { KeycloakOIDCIdentityProviderFactory.PROVIDER_ID, OIDCIdentityProviderFactory.PROVIDER_ID };
 
   private static final Set<IdentityProviderSyncMode> IDENTITY_PROVIDER_SYNC_MODES = new HashSet<>(Arrays.asList(IdentityProviderSyncMode.values()));
 
-  private static final Logger LOG = Logger.getLogger(ImpersonationPolicyClaimMapper.class);
+  private static final Logger LOG = Logger.getLogger(RegexRealmAndClientRoleClaimMapper.class);
 
   private static final List<ProviderConfigProperty> configProperties = new ArrayList<>();
 
@@ -53,12 +51,33 @@ public class ImpersonationPolicyClaimMapper extends AbstractClaimMapper {
     oidcClaimNameConfigProperty.setType(ProviderConfigProperty.STRING_TYPE);
     configProperties.add(oidcClaimNameConfigProperty);
 
-    ProviderConfigProperty regularExpressionConfigProperty = new ProviderConfigProperty();
-    regularExpressionConfigProperty.setName(REGULAR_EXPRESSION);
-    regularExpressionConfigProperty.setLabel("regular expression");
-    regularExpressionConfigProperty.setHelpText("regular expression to apply to OIDC claim; must specify two named-capturing groups: client and role");
-    regularExpressionConfigProperty.setType(ProviderConfigProperty.STRING_TYPE);
-    configProperties.add(regularExpressionConfigProperty);
+    ProviderConfigProperty clientRolesAttributeNameConfigProperty = new ProviderConfigProperty();
+    clientRolesAttributeNameConfigProperty.setName(RegexRealmAndClientRoleMapperUtil.CLIENT_ROLES_ATTRIBUTE_NAME);
+    clientRolesAttributeNameConfigProperty.setLabel("client roles attribute name");
+    clientRolesAttributeNameConfigProperty.setHelpText("only evaluate client roles having an attribute with this name");
+    clientRolesAttributeNameConfigProperty.setType(ProviderConfigProperty.STRING_TYPE);
+    configProperties.add(clientRolesAttributeNameConfigProperty);
+
+    ProviderConfigProperty clientRolesRegularExpressionConfigProperty = new ProviderConfigProperty();
+    clientRolesRegularExpressionConfigProperty.setName(RegexRealmAndClientRoleMapperUtil.CLIENT_ROLES_REGULAR_EXPRESSION);
+    clientRolesRegularExpressionConfigProperty.setLabel("client roles regular expression");
+    clientRolesRegularExpressionConfigProperty.setHelpText("regular expression to apply to the OIDC claim to extract client roles; must specify two named-capturing groups: client and role");
+    clientRolesRegularExpressionConfigProperty.setType(ProviderConfigProperty.STRING_TYPE);
+    configProperties.add(clientRolesRegularExpressionConfigProperty);
+
+    ProviderConfigProperty realmRolesAttributeNameConfigProperty = new ProviderConfigProperty();
+    realmRolesAttributeNameConfigProperty.setName(RegexRealmAndClientRoleMapperUtil.REALM_ROLES_ATTRIBUTE_NAME);
+    realmRolesAttributeNameConfigProperty.setLabel("realm roles attribute name");
+    realmRolesAttributeNameConfigProperty.setHelpText("only evaluate realm roles having an attribute with this name");
+    realmRolesAttributeNameConfigProperty.setType(ProviderConfigProperty.STRING_TYPE);
+    configProperties.add(realmRolesAttributeNameConfigProperty);
+
+    ProviderConfigProperty realmRolesRegularExpressionConfigProperty = new ProviderConfigProperty();
+    realmRolesRegularExpressionConfigProperty.setName(RegexRealmAndClientRoleMapperUtil.REALM_ROLES_REGULAR_EXPRESSION);
+    realmRolesRegularExpressionConfigProperty.setLabel("realm roles regular expression");
+    realmRolesRegularExpressionConfigProperty.setHelpText("regular expression to apply to the OIDC claim to extract realm roles; must specify one named-capturing groups: role");
+    realmRolesRegularExpressionConfigProperty.setType(ProviderConfigProperty.STRING_TYPE);
+    configProperties.add(realmRolesRegularExpressionConfigProperty);
   }
 
   @Override
@@ -78,12 +97,12 @@ public class ImpersonationPolicyClaimMapper extends AbstractClaimMapper {
 
   @Override
   public String getDisplayType() {
-    return "Impersonation Policy Claim Mapper";
+    return "Regex Realm and Client Role Importer";
   }
 
   @Override
   public String getHelpText() {
-    return "implements impersonation policy decision point";
+    return "implements regex realm and client role importer";
   }
 
   @Override
@@ -118,7 +137,6 @@ public class ImpersonationPolicyClaimMapper extends AbstractClaimMapper {
     } else {
       assertedValues = Collections.emptySet();
     }
-    String regularExpression = mapper.getConfig().getOrDefault(REGULAR_EXPRESSION, "");
-    ImpersonatorPolicyUtil.adjustUserClientRoleAssignments(realm, user, assertedValues, regularExpression);
+    RegexRealmAndClientRoleMapperUtil.processUser(realm, user, mapper, assertedValues);
   }
 }

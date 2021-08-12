@@ -6,7 +6,6 @@
 
 package com.github.lucafilipozzi.keycloak.authentication.authenticators;
 
-import com.github.lucafilipozzi.keycloak.broker.util.ImpersonatorPolicyUtil;
 import com.google.common.collect.Sets;
 import java.util.Map;
 import java.util.Set;
@@ -59,23 +58,25 @@ public class ImpersonationPolicyEnforcer implements Authenticator {
     // enforce impersonation policy: impersonator must have one or more client role(s) assigned
     Map<String, String> userSessionNotes = userSession.getNotes();
     if (userSessionNotes.containsKey(ImpersonationSessionNote.IMPERSONATOR_ID.toString())) {
-      // get the set of available client roles (filtered)
+      RoleModel impersonationRole = realm.getClientByClientId("realm-management").getRole("impersonation");
+
+      // get the set of available client roles (filtered to those composed with impersonation)
       ClientModel client = authSession.getClient();
-      Set<String> clientRoles = client.getRolesStream()
-          .map(RoleModel::getName)
-          .filter(name -> name.endsWith(ImpersonatorPolicyUtil.CLIENT_ROLE_SUFFIX))
+      Set<RoleModel> clientRoles = client.getRolesStream()
+          .filter(RoleModel::isComposite)
+          .filter(clientRole -> clientRole.getCompositesStream().anyMatch(compositeRole -> compositeRole.equals(impersonationRole)))
           .collect(Collectors.toSet());
 
-      // get the set of client roles assigned to the impersonator (filtered)
+      // get the set of client roles assigned to the impersonator (filtered to those composed with impersonation)
       String impersonatorId = userSessionNotes.get(ImpersonationSessionNote.IMPERSONATOR_ID.toString());
       UserModel impersonator = keycloakSession.userLocalStorage().getUserById(realm, impersonatorId);
-      Set<String> impersonatorRoles = impersonator.getClientRoleMappingsStream(client)
-          .map(RoleModel::getName)
-          .filter(name -> name.endsWith(ImpersonatorPolicyUtil.CLIENT_ROLE_SUFFIX))
+      Set<RoleModel> impersonatorRoles = impersonator.getClientRoleMappingsStream(client)
+          .filter(RoleModel::isComposite)
+          .filter(clientRole -> clientRole.getCompositesStream().anyMatch(compositeRole -> compositeRole.equals(impersonationRole)))
           .collect(Collectors.toSet());
 
       // compute the intersection of the two sets
-      Set<String> roleIntersection = Sets.intersection(clientRoles, impersonatorRoles);
+      Set<RoleModel> roleIntersection = Sets.intersection(clientRoles, impersonatorRoles);
 
       // deny access if the intersection is empty
       if (roleIntersection.isEmpty()) {
@@ -89,7 +90,7 @@ public class ImpersonationPolicyEnforcer implements Authenticator {
       }
 
       // otherwise, grant access
-      String roles = String.join(",", roleIntersection);
+      String roles = roleIntersection.stream().map(RoleModel::getName).collect(Collectors.joining(","));
       LOG.infof("grant access to impersonator user=%s client=%s impersonator=%s roles=%s",
           user.getUsername(), client.getClientId(), impersonator.getUsername(), roles);
       authSession.setUserSessionNote("IMPERSONATOR_ROLES", roles);
