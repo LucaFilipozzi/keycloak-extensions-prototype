@@ -19,7 +19,7 @@ import org.keycloak.models.RoleModel;
 import org.keycloak.models.UserModel;
 
 /**
- * Utilities for adjusting user realm and client role assignments.
+ * Utilities for adjusting user's realm and client role assignments.
  */
 public final class RegexRealmAndClientRoleMapperUtil {
 
@@ -40,7 +40,7 @@ public final class RegexRealmAndClientRoleMapperUtil {
   public static void processUser(RealmModel realm, UserModel user, IdentityProviderMapperModel mapper, Set<String> assertedValues) {
     LOG.trace("process user");
 
-    // adjust the users 'client role assignments
+    // adjust the user's client role assignments
     String clientRolesRegularExpression = mapper.getConfig().getOrDefault(CLIENT_ROLES_REGULAR_EXPRESSION, "");
     String clientRolesAttributeName = mapper.getConfig().getOrDefault(CLIENT_ROLES_ATTRIBUTE_NAME, "");
     RegexRealmAndClientRoleMapperUtil.adjustUserClientRoleAssignments(realm, user, assertedValues, clientRolesRegularExpression, clientRolesAttributeName);
@@ -60,7 +60,9 @@ public final class RegexRealmAndClientRoleMapperUtil {
     Set<RoleModel> wantRoles = assertedValues.stream()
         .map(pattern::matcher)
         .filter(Matcher::matches)
-        .filter(matcher -> matcher.groupCount() == 2 && matcher.group("client") != null && matcher.group("role") != null)
+        .filter(matcher -> matcher.groupCount() == 2)
+        .filter(matcher -> matcher.group("client") != null)
+        .filter(matcher -> matcher.group("role") != null)
         .flatMap(matcher ->
             realm.getClientsStream()
                 .filter(client -> client.getClientId().equalsIgnoreCase(matcher.group("client")))
@@ -91,7 +93,8 @@ public final class RegexRealmAndClientRoleMapperUtil {
     Set<RoleModel> wantRoles = assertedValues.stream()
         .map(pattern::matcher)
         .filter(Matcher::matches)
-        .filter(matcher -> matcher.groupCount() == 1 && matcher.group("role") != null)
+        .filter(matcher -> matcher.groupCount() == 1)
+        .filter(matcher -> matcher.group("role") != null)
         .flatMap(matcher ->
             realm.getRolesStream()
                 .filter(realmRole -> !realmRole.isClientRole())
