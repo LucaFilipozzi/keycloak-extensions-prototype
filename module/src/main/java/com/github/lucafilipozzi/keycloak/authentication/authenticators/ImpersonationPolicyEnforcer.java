@@ -97,7 +97,7 @@ public class ImpersonationPolicyEnforcer implements Authenticator {
     }
 
     authSession.setAuthNote(AuthenticationManager.SSO_AUTH, "true");
-    context.setUser(authResult.getUser());
+    context.setUser(user);
     context.attachUserSession(userSession);
     context.success();
   }
