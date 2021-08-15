@@ -25,6 +25,7 @@
   </dependencies>
 
   <build>
+    <!-- drop '-bundle' from finalName of the ear-->
     <finalName>${project.parent.artifactId}-${revision}</finalName>
     <plugins>
       <plugin>
@@ -37,8 +38,8 @@
             <jarModule>
               <groupId>${project.groupId}</groupId>
               <artifactId>${project.parent.artifactId}-module</artifactId>
-              <bundleDir>/</bundleDir>
-              <bundleFileName>${project.parent.groupId}-${project.parent.artifactId}.jar</bundleFileName>
+              <!-- drop '-module' from finalName of the jar within the ear -->
+              <bundleFileName>${project.parent.groupId}-${project.parent.artifactId}-${revision}.jar</bundleFileName>
               <includeInApplicationXml>true</includeInApplicationXml>
             </jarModule>
           </modules>

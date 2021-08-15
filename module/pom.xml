@@ -17,6 +17,7 @@
   <packaging>jar</packaging>
   <name>module</name>
 
+  <!-- IMPORTANT: don't forget to update jboss-deployment-structure.xml -->
   <dependencies>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -53,7 +54,6 @@
   </dependencies>
 
   <build>
-    <finalName>${project.parent.artifactId}</finalName>
     <plugins>
       <!-- verify -->
       <plugin>
