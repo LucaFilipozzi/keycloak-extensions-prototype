@@ -11,8 +11,8 @@
 [![code quality][code-quality-img]][code-quality-url]
 
 [![lines of code][lines-of-code-img]][lines-of-code-url]
+[![maintainability][maintainability-img]][maintainability-url]
 [![technical debt][technical-debt-img]][technical-debt-url]
-[![vulnerabilities][vulnerabilities-img]][vulnerabilities-url]
 
 # keycloak-extensions-prototype
 
@@ -106,7 +106,7 @@ file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 [lines-of-code-img]: https://badgen.net/codeclimate/loc/LucaFilipozzi/keycloak-extensions-prototype?icon=codeclimate
 [lines-of-code-url]: https://codeclimate.com/github/LucaFilipozzi/keycloak-extensions-prototype
+[maintainability-img]: https://badgen.net/codeclimate/maintainability/LucaFilipozzi/keycloak-extensions-prototype?icon=codeclimate
+[maintainability-url]: https://codeclimate.com/github/LucaFilipozzi/keycloak-extensions-prototype/maintainability
 [technical-debt-img]: https://badgen.net/codeclimate/tech-debt/LucaFilipozzi/keycloak-extensions-prototype?icon=codeclimate
 [technical-debt-url]: https://codeclimate.com/github/LucaFilipozzi/keycloak-extensions-prototype/maintainability
-[vulnerabilities-img]: https://badgen.net/snyk/LucaFilipozzi/keycloak-extensions-prototype/main/pom.xml
-[vulnerabilities-url]: https://snyk.io/test/github/lucafilipozzi/keycloak-extensions-prototype?targetFile=pom.xml
