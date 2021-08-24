@@ -10,7 +10,7 @@
   <parent>
     <artifactId>keycloak-parent</artifactId>
     <groupId>org.keycloak</groupId>
-    <version>13.0.1</version>
+    <version>15.0.2</version>
   </parent>
 
   <groupId>com.github.lucafilipozzi</groupId>
@@ -24,8 +24,8 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <revision>1.0.0-SNAPSHOT</revision>
-    <keycloak.version>13.0.1</keycloak.version>
+    <revision>1.0.0</revision>
+    <keycloak.version>15.0.2</keycloak.version>
   </properties>
 
   <dependencyManagement>
