@@ -10,7 +10,7 @@
 [![alerts][alerts-img]][alerts-url]
 [![code quality][code-quality-img]][code-quality-url]
 
-[![maintainability][maintainability-img]][maintainability-url]
+[![lines of code][lines-of-code-img]][lines-of-code-url]
 [![technical debt][technical-debt-img]][technical-debt-url]
 [![vulnerabilities][vulnerabilities-img]][vulnerabilities-url]
 
@@ -104,8 +104,8 @@ file, You can obtain one at https://mozilla.org/MPL/2.0/.
 [code-quality-img]: https://badgen.net/lgtm/grade/g/LucaFilipozzi/keycloak-extensions-prototype/java?icon=lgtm
 [code-quality-url]: https://lgtm.com/projects/g/LucaFilipozzi/keycloak-extensions-prototype/context:java
 
-[maintainability-img]: https://badgen.net/codeclimate/maintainability/LucaFilipozzi/keycloak-extensions-prototype?icon=codeclimate
-[maintainability-url]: https://codeclimate.com/github/LucaFilipozzi/keycloak-extensions-prototype/maintainability
+[lines-of-code-img]: https://badgen.net/codeclimate/loc/LucaFilipozzi/keycloak-extensions-prototype?icon=codeclimate
+[lines-of-code-url]: https://codeclimate.com/github/LucaFilipozzi/keycloak-extensions-prototype
 [technical-debt-img]: https://badgen.net/codeclimate/tech-debt/LucaFilipozzi/keycloak-extensions-prototype?icon=codeclimate
 [technical-debt-url]: https://codeclimate.com/github/LucaFilipozzi/keycloak-extensions-prototype/maintainability
 [vulnerabilities-img]: https://badgen.net/snyk/LucaFilipozzi/keycloak-extensions-prototype/main/pom.xml
